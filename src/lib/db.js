@@ -7,12 +7,10 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'mysql',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
+    logging: false,
+    define: {
+      timestamps: true,
+      underscored: true
     }
   }
 );
@@ -23,7 +21,7 @@ export async function connectDB() {
     await sequelize.sync({ alter: true });
     console.log('✅ Conexión a MySQL establecida');
   } catch (error) {
-    console.error('❌ Error de conexión a MySQL:', error);
+    console.error('❌ Error de conexión:', error.message);
     process.exit(1);
   }
 }

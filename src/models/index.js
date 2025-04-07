@@ -1,6 +1,25 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../lib/db.js';
 
+export const User = sequelize.define('User', {
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true
+    }
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  role: {
+    type: DataTypes.ENUM('admin', 'user'),
+    defaultValue: 'user'
+  }
+});
+
 export const Company = sequelize.define('Company', {
   name: {
     type: DataTypes.STRING,
@@ -13,8 +32,9 @@ export const Company = sequelize.define('Company', {
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: false,
-    validate: { isEmail: true }
+    validate: {
+      isEmail: true
+    }
   },
   phone: DataTypes.STRING(20),
   address: DataTypes.TEXT
@@ -29,19 +49,17 @@ export const Tax = sequelize.define('Tax', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  description: DataTypes.TEXT,
-  frequency: {
-    type: DataTypes.ENUM('monthly', 'bimonthly', 'quarterly', 'yearly'),
-    allowNull: false
-  },
+  amount: DataTypes.FLOAT,
   dueDate: {
     type: DataTypes.DATE,
     allowNull: false
   },
-  reminderDays: {
-    type: DataTypes.INTEGER,
-    defaultValue: 7
+  status: {
+    type: DataTypes.ENUM('pending', 'paid', 'overdue'),
+    defaultValue: 'pending'
   }
 });
-Company.hasMany(Tax);
-Tax.belongsTo(Company);
+
+// Relaciones
+Company.hasMany(Tax, { foreignKey: 'companyId' });
+Tax.belongsTo(Company, { foreignKey: 'companyId' });
